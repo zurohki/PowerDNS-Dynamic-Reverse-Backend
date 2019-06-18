@@ -79,6 +79,9 @@ class HierDict(dict):
                 raise
             return self._parent[name]
 
+def abb_encode(n):
+    return re.sub(':', '-', str(n))
+
 def base36encode(n):
     s = ''
     while True:
@@ -190,8 +193,7 @@ def parse(prefixes, rtree, fd, out):
             node=rtree.search_best(str(ipv6))
             if node:
                 range, key = node.data['prefix'], prefixes[node.data['prefix']]
-                node = ipv6.value - range.value
-                node = base36encode(node)
+                node = abb_encode(ipv6)
                 out.write("DATA\t%s\t%s\tPTR\t%d\t%s\t%s%s%s.%s\n" % \
                     (qname, qclass, key['ttl'], qid, key['prefix'], node, key['postfix'], key['forward']))
         if qtype in ['PTR', 'ANY'] and qname.endswith('.in-addr.arpa'):
